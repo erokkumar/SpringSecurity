@@ -23,7 +23,7 @@ public class userController {
     @Autowired
     private userRepository userRepository;
 
-    @GetMapping
+    @GetMapping("/all")
     public List<User> findAllUser(){
         return UserService.getallUser();
     }
@@ -58,6 +58,12 @@ public class userController {
         Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
         userRepository.deleteByUserName(authentication.getName());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> greeting(){
+        Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
+        return new ResponseEntity<>("Hi "+ authentication.getName(),HttpStatus.OK);
     }
 
 }

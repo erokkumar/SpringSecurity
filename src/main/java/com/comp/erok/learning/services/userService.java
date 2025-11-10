@@ -2,6 +2,7 @@ package com.comp.erok.learning.services;
 
 import com.comp.erok.learning.Model.User;
 import com.comp.erok.learning.Repository.userRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class userService {
 
 	@Autowired
@@ -27,9 +29,13 @@ public class userService {
 	}
 
 	public void saveNewUser(User user){
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		user.setRoles(Arrays.asList("USER"));
-		userRepository.save(user);
+		try {
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
+			user.setRoles(Arrays.asList("USER"));
+			userRepository.save(user);
+		}catch (Exception e){
+			log.error("Error Occurred for {} :" , user.getUserName() , e);
+		}
 	}
 
 	public List<User> getallUser(){
