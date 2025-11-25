@@ -3,6 +3,8 @@ package com.comp.erok.learning.Controller;
 
 import com.comp.erok.learning.Model.User;
 import com.comp.erok.learning.Repository.userRepository;
+import com.comp.erok.learning.api.response.WeatherResponse;
+import com.comp.erok.learning.services.WheatherService;
 import com.comp.erok.learning.services.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,9 @@ public class userController {
 
     @Autowired
     private userRepository userRepository;
+
+    @Autowired
+    private WheatherService wheatherService;
 
     @GetMapping("/all")
     public List<User> findAllUser(){
@@ -60,10 +65,17 @@ public class userController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping
-    public ResponseEntity<?> greeting(){
-        Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
-        return new ResponseEntity<>("Hi "+ authentication.getName(),HttpStatus.OK);
+    @GetMapping("/location/{city}")
+    public ResponseEntity<?> greeting(@PathVariable String city){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        WeatherResponse weather = wheatherService.getWather(city);
+        String grt = null;
+        if (weather != null) {
+            grt = "Temperature in " + city + " : " + weather.getCurrent().getFeelslike() + "°C";
+        } else {
+            System.out.println("Could not fetch weather data.");
+        }
+        return new ResponseEntity<>("Hi " + authentication.getName() + " "+grt, HttpStatus.OK);
     }
 
 }
